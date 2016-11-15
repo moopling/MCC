@@ -1,14 +1,16 @@
 import binascii
 
-def hex2b64(hexstr):
-    bytestr = binascii.a2b_hex(hexstr)
-    b64str = binascii.b2a_base64(bytestr)
-    return b64str
+def hammingDistance(byte_array1, byte_array2):
+    if len(byte_array1) != len(byte_array2):
+        raise ValueError("byte array lengths did not match")
+    length = len(byte_array1)
+    hammingDist_bytes = [bin(byte_array1[i]^byte_array2[i]).count("1") for i in range(length)]
+    return sum(hammingDist_bytes)
 
 def main():
-    hexstr = '49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d'  
-    b64str = hex2b64(hexstr)
-    print(b64str)
+    bytes1 = b'this is a test'
+    bytes2 = b'wokka wokka!!!'
+    print(hammingDistance(bytes1, bytes2))
 
 if __name__ == '__main__':
     main()
