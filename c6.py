@@ -7,7 +7,13 @@ def hammingDistance(byte_array1, byte_array2):
     hammingDist_bytes = [bin(byte_array1[i]^byte_array2[i]).count("1") for i in range(length)]
     return sum(hammingDist_bytes)
 
+def xx(keysize):
+    
+
+
 def main():
+    for KEYSIZE in range(2:41):
+
     bytes1 = b'this is a test'
     bytes2 = b'wokka wokka!!!'
     print(hammingDistance(bytes1, bytes2))
