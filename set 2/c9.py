@@ -1,10 +1,11 @@
-def pad(plaintext, required_length):
+def pad(plaintext: bytes, required_length: int) -> bytes:
     padding = required_length-len(plaintext)
     return plaintext + padding*bytes([padding])
 
-def main():
+def main() -> None:
     key = b'YELLOW SUBMARINE'
-    print(pad(key, 20))
+    value = 20
+    print(pad(key, value))
 
 if __name__ == '__main__':
     main()
