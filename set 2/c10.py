@@ -17,26 +17,35 @@ class my_AES:
         return self.cipher.decrypt(ciphertext)
 
     def encrypt_cbc(self, plaintext: bytes, iv: bytes) -> bytes:
-        blocks = self._split_blocks(plaintext)
-        blocks.next()
-        x = (self._xor_blocks(blocks.next(), blocks.next())
-             for i in range(self._num_blocks(plaintext)))
+        unencrypted_blocks = self._split_blocks(plaintext)
+        encrypted_block = iv
+        ciphertext = []
+        for unencrypted_block in unencrypted_blocks:
+            i = self._xor_blocks(unencrypted_block, encrypted_block)
+            encrypted_block = self.encrypt_ecb(i)
+            ciphertext.append(encrypted_block)
+        return b''.join(ciphertext)
 
     def decrypt_cbc(self, ciphertext: bytes, iv: bytes) -> bytes:
-        pass
+        encrypted_blocks = self._split_blocks(ciphertext)
+        prev_encrypted_block = iv
+        plaintext = []
+        for encrypted_block in encrypted_blocks:
+            i = self.decrypt_ecb(encrypted_block)
+            unencrypted_block = self._xor_blocks(prev_encrypted_block, i)
+            prev_encrypted_block = encrypted_block
+            plaintext.append(unencrypted_block)
+        return b''.join(plaintext)
 
     def _split_blocks(self, text: bytes) -> Iterator[bytes]:
+        if len(text) % self.blocksize:
+            raise ValueError("message must be a multiple of the blocksize")
         blocks = (text[i: i + self.blocksize]
-                  for i in range(self._num_blocks(text)))
+                  for i in range(0, len(text), self.blocksize))
         return blocks
 
     def _xor_blocks(self, block1: bytes, block2: bytes) -> bytes:
         return bytes(block1[i] ^ block2[i] for i in range(self.blocksize))
-
-    def _num_blocks(self, text) -> int:
-        if not len(text) % self.blocksize:
-            raise ValueError("message must be a multiple of the blocksize")
-        return len(text) // self.blocksize
 
 
 def main() -> None:
@@ -47,9 +56,9 @@ def main() -> None:
 
         key = b'YELLOW SUBMARINE'
         cipher = my_AES(key)
-
-        # plaintext = cipher.(ciphertext)
-        # print(plaintext)
+        iv = bytes(16)
+        plaintext = cipher.decrypt_cbc(ciphertext, iv)
+        print(plaintext)
 
 
 if __name__ == '__main__':
